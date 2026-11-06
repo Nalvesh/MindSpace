@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#F8F6F1] text-[#252525]">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MINDSPACE — Mental Wellness Testing Platform</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Playfair Display + Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- JSZip for Client-side ZIP Code Export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: '#F8F6F1',
+            charcoal: '#252525',
+            sage: '#A7B5A0',
+            lavender: '#B9AED0',
+            peach: '#E9BCA8',
+            paleblue: '#C4D5DF',
+            sageDark: '#607258',
+            lavenderDark: '#6B5A89',
+            peachDark: '#B36144',
+            paleblueDark: '#4F7285',
+          },
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom scrollbar & smooth transitions */
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', sans-serif; background-color: #F8F6F1; color: #252525; }
+    h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+    
+    .fade-enter { opacity: 0; transform: translateY(10px); }
+    .fade-enter-active { opacity: 1; transform: translateY(0); transition: opacity 300ms, transform 300ms; }
+    
+    @media print {
+      .no-print { display: none !important; }
+      .print-only { display: block !important; }
+      body { background-color: white !important; color: black !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sage/30 selection:text-charcoal antialiased">
+
+  <!-- TOP HEADER / NAVBAR -->
+  <header class="no-print sticky top-0 z-40 bg-[#F8F6F1]/90 backdrop-blur-md border-b border-charcoal/10 transition-all">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Logo -->
+      <a href="#" onclick="navigateTo('home'); return false;" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-full bg-sage/20 border border-sage/40 flex items-center justify-center text-sageDark group-hover:bg-sage group-hover:text-ivory transition-all shadow-sm">
+          <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <span class="font-serif text-2xl font-bold tracking-tight text-charcoal">MINDSPACE</span>
+          <span class="block text-[10px] tracking-widest uppercase text-charcoal/60 font-semibold -mt-1">Mental Wellness</span>
+        </div>
+      </a>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-charcoal/80">
+        <button onclick="navigateTo('home')" class="hover:text-charcoal transition-colors">Assessments</button>
+        <button onclick="openModal('how-it-works-modal')" class="hover:text-charcoal transition-colors">How It Works</button>
+        <button onclick="openModal('disclaimer-modal')" class="hover:text-charcoal transition-colors">Disclaimer</button>
+        <button onclick="openModal('crisis-modal')" class="text-peachDark font-semibold hover:underline flex items-center gap-1.5 bg-peach/20 px-3 py-1.5 rounded-full border border-peach/30">
+          <i data-lucide="heart-handshake" class="w-4 h-4"></i> Get Help
+        </button>
+      </nav>
+
+      <!-- Action Button -->
+      <div class="flex items-center gap-3">
+        <button onclick="downloadSourceZip()" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-charcoal bg-white border border-charcoal/15 rounded-full hover:bg-charcoal hover:text-white transition-all shadow-sm">
+          <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Project ZIP
+        </button>
+        <button onclick="openModal('crisis-modal')" class="md:hidden p-2 text-peachDark bg-peach/20 rounded-full">
+          <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main id="app-content" class="flex-grow max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <!-- Dynamic views render here via JavaScript -->
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="no-print bg-white/60 border-t border-charcoal/10 py-12 mt-16 text-xs text-charcoal/70">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+      <div class="space-y-3 md:col-span-1">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-full bg-sage/20 border border-sage flex items-center justify-center text-sageDark">
+            <i data-lucide="brain" class="w-4 h-4"></i>
+          </div>
+          <span class="font-serif text-lg font-bold text-charcoal">MINDSPACE</span>
+        </div>
+        <p class="text-charcoal/70 leading-relaxed">
+          Understand Yourself. Take Care of Your Mind.
+        </p>
+        <p class="text-[11px] text-charcoal/50">
+          Self-reflection tools built with editorial care and psychological integrity.
+        </p>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-charcoal uppercase tracking-wider mb-3 text-[11px]">Assessments</h4>
+        <ul class="space-y-2">
+          <li><button onclick="startAssessment('test-01')" class="hover:underline">Stress Level Assessment</button></li>
+          <li><button onclick="startAssessment('test-02')" class="hover:underline">Anxiety Awareness</button></li>
+          <li><button onclick="startAssessment('test-03')" class="hover:underline">Emotional Wellbeing</button></li>
+          <li><button onclick="startAssessment('test-04')" class="hover:underline">Burnout & Fatigue</button></li>
+          <li><button onclick="startAssessment('test-05')" class="hover:underline">Self-Esteem & Confidence</button></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-charcoal uppercase tracking-wider mb-3 text-[11px]">Resources & Support</h4>
+        <ul class="space-y-2">
+          <li><button onclick="openModal('disclaimer-modal')" class="hover:underline">Clinical Disclaimer</button></li>
+          <li><button onclick="openModal('privacy-modal')" class="hover:underline">Privacy & Data Handling</button></li>
+          <li><button onclick="openModal('crisis-modal')" class="hover:underline text-peachDark font-medium">Crisis Helpline Directory</button></li>
+          <li><button onclick="downloadSourceZip()" class="hover:underline text-sageDark font-medium">Download Complete Source Code ZIP</button></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-semibold text-charcoal uppercase tracking-wider mb-3 text-[11px]">Safety Notice</h4>
+        <p class="text-charcoal/70 leading-relaxed mb-3">
+          MINDSPACE is strictly an educational self-reflection platform. It does not provide medical diagnoses or replace clinical therapy.
+        </p>
+        <p class="text-[11px] text-charcoal/50">
+          If you are in immediate distress, call or text <strong>988</strong> (USA/Canada) or contact your local emergency service.
+        </p>
+      </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-charcoal/10 pt-6 flex flex-col sm:flex-row items-center justify-between text-charcoal/50 gap-4">
+      <div>&copy; <span id="year"></span> MINDSPACE Platform. All rights reserved. Self-reflection for emotional growth.</div>
+      <div class="flex gap-4">
+        <button onclick="openModal('privacy-modal')" class="hover:text-charcoal">Privacy</button>
+        <button onclick="openModal('disclaimer-modal')" class="hover:text-charcoal">Terms</button>
+        <button onclick="window.scrollTo({top:0, behavior:'smooth'})" class="hover:text-charcoal flex items-center gap-1">
+          Back to top <i data-lucide="arrow-up" class="w-3 h-3"></i>
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALS CONTAINER -->
+  <div id="modal-backdrop" class="fixed inset-0 bg-charcoal/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 transition-opacity">
+    
+    <!-- DISCLAIMER MODAL -->
+    <div id="disclaimer-modal" class="modal-card hidden bg-[#F8F6F1] max-w-xl w-full rounded-2xl border border-charcoal/15 p-6 sm:p-8 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 rounded-full bg-peach/30 border border-peach flex items-center justify-center text-peachDark">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <button onclick="closeModal()" class="p-1 rounded-full text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal mb-2">Mental Health & Clinical Disclaimer</h3>
+        <p class="text-sm text-charcoal/80 leading-relaxed mb-4">
+          Please read this important notice regarding the scope and purpose of the assessments on MINDSPACE.
+        </p>
+        <div class="bg-white/80 p-4 rounded-xl border border-charcoal/10 text-xs leading-relaxed space-y-3 text-charcoal/80">
+          <p><strong>Educational & Self-Awareness Purpose Only:</strong> The questionnaires provided on MINDSPACE are designed exclusively for personal reflection, emotional self-monitoring, and psychoeducational awareness.</p>
+          <p><strong>Not a Diagnostic Instrument:</strong> Results obtained from these assessments do not constitute a psychiatric diagnosis, medical evaluation, or treatment recommendation. They are not intended to replace consultation with a licensed psychologist, psychiatrist, or medical professional.</p>
+          <p><strong>Configurable Thresholds:</strong> Category scores are derived from standard non-clinical scoring thresholds for illustrative self-evaluation.</p>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeModal()" class="px-6 py-2.5 bg-charcoal text-white rounded-full text-sm font-medium hover:bg-charcoal/90 transition-all">I Understand</button>
+      </div>
+    </div>
+
+    <!-- PRIVACY MODAL -->
+    <div id="privacy-modal" class="modal-card hidden bg-[#F8F6F1] max-w-xl w-full rounded-2xl border border-charcoal/15 p-6 sm:p-8 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 rounded-full bg-sage/30 border border-sage flex items-center justify-center text-sageDark">
+          <i data-lucide="lock" class="w-5 h-5"></i>
+        </div>
+        <button onclick="closeModal()" class="p-1 rounded-full text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal mb-2">100% Confidential & Local Privacy</h3>
+        <p class="text-sm text-charcoal/80 leading-relaxed mb-4">
+          Your privacy and emotional safety are paramount. MINDSPACE is designed to keep your responses completely private.
+        </p>
+        <div class="bg-white/80 p-4 rounded-xl border border-charcoal/10 text-xs leading-relaxed space-y-3 text-charcoal/80">
+          <p><strong>Zero Server Storage:</strong> Your assessment responses, total scores, and generated reports are stored strictly inside your own browser session using temporary client memory.</p>
+          <p><strong>No Identity Tracking:</strong> We do not ask for your name, email address, IP address tracking, or personal identifiers.</p>
+          <p><strong>No Third-Party Analytics:</strong> Mental health data is never packaged, sold, or transmitted to external advertisers or diagnostic networks.</p>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeModal()" class="px-6 py-2.5 bg-charcoal text-white rounded-full text-sm font-medium hover:bg-charcoal/90 transition-all">Close</button>
+      </div>
+    </div>
+
+    <!-- HOW IT WORKS MODAL -->
+    <div id="how-it-works-modal" class="modal-card hidden bg-[#F8F6F1] max-w-xl w-full rounded-2xl border border-charcoal/15 p-6 sm:p-8 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 rounded-full bg-lavender/30 border border-lavender flex items-center justify-center text-lavenderDark">
+          <i data-lucide="compass" class="w-5 h-5"></i>
+        </div>
+        <button onclick="closeModal()" class="p-1 rounded-full text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal mb-2">How MINDSPACE Works</h3>
+        <p class="text-sm text-charcoal/80 leading-relaxed mb-4">
+          A thoughtful 3-step process to foster clarity, mindfulness, and personal growth.
+        </p>
+        <div class="space-y-4 text-xs text-charcoal/80">
+          <div class="flex gap-3 items-start">
+            <span class="w-6 h-6 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-[11px] shrink-0">1</span>
+            <div>
+              <strong class="text-charcoal text-sm block mb-1">Select an Assessment</strong>
+              Choose from 5 domain-specific questionnaires focused on stress, anxiety, emotional balance, burnout, or self-esteem.
+            </div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span class="w-6 h-6 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-[11px] shrink-0">2</span>
+            <div>
+              <strong class="text-charcoal text-sm block mb-1">Reflect on Recent Experience</strong>
+              Answer 10 carefully calibrated questions based on how you have felt over the past two weeks. Take your time without rush or timers.
+            </div>
+          </div>
+          <div class="flex gap-3 items-start">
+            <span class="w-6 h-6 rounded-full bg-charcoal text-white flex items-center justify-center font-bold text-[11px] shrink-0">3</span>
+            <div>
+              <strong class="text-charcoal text-sm block mb-1">Receive Practical Insights</strong>
+              Explore an editorial summary with pattern identification, tailored actionable suggestions, and personal reflection prompts.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeModal()" class="px-6 py-2.5 bg-charcoal text-white rounded-full text-sm font-medium hover:bg-charcoal/90 transition-all">Got It</button>
+      </div>
+    </div>
+
+    <!-- CRISIS HELP MODAL -->
+    <div id="crisis-modal" class="modal-card hidden bg-[#F8F6F1] max-w-xl w-full rounded-2xl border border-peach/40 p-6 sm:p-8 shadow-2xl space-y-5 overflow-y-auto max-h-[90vh]">
+      <div class="flex justify-between items-start">
+        <div class="w-10 h-10 rounded-full bg-peach/30 border border-peach flex items-center justify-center text-peachDark">
+          <i data-lucide="heart-handshake" class="w-5 h-5"></i>
+        </div>
+        <button onclick="closeModal()" class="p-1 rounded-full text-charcoal/50 hover:text-charcoal hover:bg-charcoal/5"><i data-lucide="x" class="w-6 h-6"></i></button>
+      </div>
+      <div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal mb-2">Immediate Crisis & Support Resources</h3>
+        <p class="text-sm text-charcoal/80 leading-relaxed mb-4">
+          If you are experiencing severe distress, thoughts of self-harm, or an emotional crisis, please know that compassionate human help is available right now.
+        </p>
+        <div class="space-y-3 text-xs">
+          <div class="bg-white p-3.5 rounded-xl border border-charcoal/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-charcoal text-sm">988 Suicide & Crisis Lifeline (US & Canada)</div>
+              <div class="text-charcoal/60 text-[11px]">Free, confidential, 24/7 call or text support.</div>
+            </div>
+            <a href="tel:988" class="px-3.5 py-1.5 bg-peachDark text-white rounded-full font-semibold hover:bg-peachDark/90">Call 988</a>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-xl border border-charcoal/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-charcoal text-sm">Crisis Text Line</div>
+              <div class="text-charcoal/60 text-[11px]">Text HOME to 741741 to connect with a crisis counselor.</div>
+            </div>
+            <a href="sms:741741" class="px-3.5 py-1.5 bg-charcoal text-white rounded-full font-semibold hover:bg-charcoal/80">Text 741741</a>
+          </div>
+
+          <div class="bg-white p-3.5 rounded-xl border border-charcoal/10 flex items-center justify-between">
+            <div>
+              <div class="font-bold text-charcoal text-sm">International Resources (Befrienders Worldwide)</div>
+              <div class="text-charcoal/60 text-[11px]">Find free support services in over 40 countries.</div>
+            </div>
+            <a href="https://www.befrienders.org" target="_blank" rel="noopener" class="px-3.5 py-1.5 border border-charcoal/20 text-charcoal rounded-full font-semibold hover:bg-charcoal/5">Visit Website</a>
+          </div>
+        </div>
+      </div>
+      <div class="pt-2 flex justify-end">
+        <button onclick="closeModal()" class="px-6 py-2.5 bg-charcoal text-white rounded-full text-sm font-medium hover:bg-charcoal/90 transition-all">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION JAVASCRIPT & DATA ENGINES -->
+  <script>
+    // Set current year in footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ANSWER SCALE (Standardized 5-point Likert scale)
+    const ANSWER_SCALE = [
+      { label: "Never", value: 0, desc: "Not experienced at all in the past 2 weeks" },
+      { label: "Rarely", value: 1, desc: "Occurred only once or twice" },
+      { label: "Sometimes", value: 2, desc: "Occurred several days or occasionally" },
+      { label: "Often", value: 3, desc: "Occurred more than half the days" },
+      { label: "Almost Always", value: 4, desc: "Experienced almost every single day" }
+    ];
+
+    // COMPLETE 5-TEST ASSESSMENT DATA DATASET
+    const ASSESSMENTS = {
+      "test-01": {
+        id: "test-01",
+        number: "TEST 01",
+        title: "Stress Level Assessment",
+        tagline: "Perceived Pressure & Coping Capacity",
+        shortDesc: "Measure perceived daily stress, feelings of overload, irritability, and your capacity to bounce back under pressure.",
+        timeEst: "3-4 mins",
+        colorScheme: {
+          bg: "bg-sage/10",
+          badge: "bg-sage/30 text-sageDark border-sage/50",
+          accent: "#A7B5A0",
+          darkAccent: "#607258",
+          btnBg: "bg-sageDark text-white hover:bg-sageDark/90"
+        },
+        svgBg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-sage">
+                  <path fill="currentColor" opacity="0.4" d="M41.5,-63.2C53.7,-53.4,63.6,-41.8,69.8,-28.4C76,-15,78.5,0.2,74.7,14C70.9,27.8,60.8,40.2,49,49.2C37.2,58.2,23.7,63.8,9.4,65.3C-4.9,66.8,-20,64.2,-33.5,57.3C-47,50.4,-58.9,39.2,-65.2,25.3C-71.5,11.4,-72.2,-5.2,-66.9,-19.8C-61.6,-34.4,-50.3,-47,-37.3,-56.4C-24.3,-65.8,-9.6,-72,3.3,-77.2C16.2,-82.4,29.3,-73,41.5,-63.2Z" transform="translate(100 100)" />
+                  <circle cx="100" cy="100" r="45" fill="none" stroke="#607258" stroke-width="2" stroke-dasharray="4 4" />
+                  <path d="M75 110 Q 100 80 125 110" stroke="#607258" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </svg>`,
+        questions: [
+          { id: 1, text: "In the past two weeks, how often have you felt overwhelmed by the volume of your daily tasks or responsibilities?" },
+          { id: 2, text: "How often have you found it difficult to relax or turn off your thoughts at the end of the day?" },
+          { id: 3, text: "How frequently have you felt irritable, quick-tempered, or easily frustrated over small setbacks?" },
+          { id: 4, text: "How often have you experienced physical signs of tension (e.g., tight shoulders, jaw clenching, tension headaches)?" },
+          { id: 5, text: "How often have you felt that unexpected events completely threw off your emotional balance?" },
+          { id: 6, text: "How frequently have you experienced sleep disturbances due to worrying about upcoming demands?" },
+          { id: 7, text: "How often have you felt unable to control or influence important aspects of your daily routine?" },
+          { id: 8, text: "How frequently have you felt mentally drained before your workday or responsibilities even began?" },
+          { id: 9, text: "How often have you found yourself rushing constantly, feeling like time is always running out?" },
+          { id: 10, text: "How often have you felt that difficulties were piling up so high that you could not overcome them?" }
+        ],
+        categories: [
+          {
+            minPct: 0, maxPct: 25,
+            title: "Balanced & Resilient Stress Profile",
+            badge: "Low Stress Indicators",
+            colorClass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+            summary: "Your responses suggest a high degree of current emotional balance and strong coping mechanisms.",
+            patterns: "You appear to navigate daily obligations with manageable pressure. Unexpected changes or demands seem to be met with adaptability rather than intense overwhelm.",
+            suggestions: [
+              "Maintain your current healthy boundaries between work, rest, and personal life.",
+              "Document your key coping strategies so you can draw upon them during busier future seasons.",
+              "Continue engaging in restorative hobbies, physical activity, and social connection.",
+              "Practice proactive mindfulness to preserve this baseline during upcoming transitions."
+            ],
+            reflection: [
+              "What specific routines or mindsets currently protect your peace of mind?",
+              "How can you support others around you who might be experiencing higher stress?"
+            ]
+          },
+          {
+            minPct: 26, maxPct: 50,
+            title: "Mild Cumulative Stress",
+            badge: "Mild Stress Indicators",
+            colorClass: "text-blue-700 bg-blue-50 border-blue-200",
+            summary: "Your answers reflect moderate periodic pressure that is noticeable but generally manageable.",
+            patterns: "You experience occasional surges of tension, particularly when unexpected tasks accumulate. While you maintain functioning, you may notice periodic mental fatigue or restlessness.",
+            suggestions: [
+              "Identify 1-2 recurring micro-stressors and consider delegating or simplifying them.",
+              "Incorporate short 5-minute breathing resets during transitions between major tasks.",
+              "Establish a firmer evening transition ritual to separate workday demands from rest.",
+              "Ensure consistent sleep hygiene to prevent mild tension from turning into chronic fatigue."
+            ],
+            reflection: [
+              "Which daily responsibility creates the most friction or drain on your energy?",
+              "What is one small boundary you could set this week to protect your downtime?"
+            ]
+          },
+          {
+            minPct: 51, maxPct: 75,
+            title: "Moderate Emotional & Physical Stress",
+            badge: "Moderate Stress Indicators",
+            colorClass: "text-amber-800 bg-amber-50 border-amber-200",
+            summary: "Your responses indicate sustained stress levels that may be eroding your daily energy and patience.",
+            patterns: "You likely experience persistent physical muscle tension, difficulty unwinding, and frequent feelings of being pushed past your comfortable bandwidth.",
+            suggestions: [
+              "Conduct a time and obligation audit: pause non-essential commitments for two weeks.",
+              "Practice progressive muscle relaxation before bed to ease somatic tension.",
+              "Schedule non-negotiable 'blank space' blocks in your calendar for unstructured downtime.",
+              "Reach out to a trusted peer, mentor, or counselor to talk through heavy burdens."
+            ],
+            reflection: [
+              "What demands am I taking on that aren't truly mine to carry?",
+              "How does my body physically signal to me that I'm reaching my stress limit?"
+            ]
+          },
+          {
+            minPct: 76, maxPct: 100,
+            title: "Elevated Stress & Emotional Overload",
+            badge: "Elevated Stress Indicators",
+            colorClass: "text-rose-800 bg-rose-50 border-rose-200",
+            summary: "Your responses reflect significant burden, emotional exhaustion, and high perceived pressure.",
+            patterns: "You are experiencing persistent overwhelm, mental drain, and difficulty finding relief or control. This level of stress warrants intentional restorative intervention and supportive care.",
+            suggestions: [
+              "Prioritize immediate rest and reduce non-vital daily demands as much as possible.",
+              "Speak with a medical practitioner or licensed mental health professional for guidance.",
+              "Break large intimidating projects into micro-steps to lower cognitive pressure.",
+              "Engage in grounding sensory exercises (e.g., warm baths, quiet walks) daily."
+            ],
+            reflection: [
+              "What immediate pressure can I step back from today to catch my breath?",
+              "Who in my support system can I ask for practical help right now?"
+            ]
+          }
+        ]
+      },
+
+      "test-02": {
+        id: "test-02",
+        number: "TEST 02",
+        title: "Anxiety Awareness Assessment",
+        tagline: "Worrying Patterns & Nervous System Tension",
+        shortDesc: "Reflect on persistent worrying, restless thoughts, physical nervousness, and difficulty sitting with uncertainty.",
+        timeEst: "3-4 mins",
+        colorScheme: {
+          bg: "bg-lavender/10",
+          badge: "bg-lavender/30 text-lavenderDark border-lavender/50",
+          accent: "#B9AED0",
+          darkAccent: "#6B5A89",
+          btnBg: "bg-lavenderDark text-white hover:bg-lavenderDark/90"
+        },
+        svgBg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-lavender">
+                  <path fill="currentColor" opacity="0.4" d="M38.1,-58.4C48.8,-49.2,56.7,-37.2,62.8,-23.9C68.9,-10.6,73.2,4,70.1,17.4C67,30.8,56.5,43,44.1,51.8C31.7,60.6,17.4,66,-0.1,66.1C-17.6,66.2,-31.8,61,-44.6,52.1C-57.4,43.2,-68.8,30.6,-71.9,16.1C-75,-1.6,-69.8,-21.2,-59.7,-35.1C-49.6,-49,-34.6,-57.2,-20.1,-60.7C-5.6,-64.2,8.4,-63,22.4,-60.1Z" transform="translate(100 100)" />
+                  <path d="M60 100 Q 100 60 140 100 T 180 100" stroke="#6B5A89" stroke-width="2.5" fill="none" opacity="0.7"/>
+                </svg>`,
+        questions: [
+          { id: 1, text: "In the past two weeks, how often have you found yourself trapped in worst-case scenario overthinking?" },
+          { id: 2, text: "How frequently have you experienced an inner feeling of restlessness or an inability to sit still?" },
+          { id: 3, text: "How often have you felt intense uneasiness when facing uncertain or unpredictable outcomes?" },
+          { id: 4, text: "How frequently have you felt your heart racing, sudden tightness in your chest, or shallow breathing?" },
+          { id: 5, text: "How often have worrying thoughts interrupted your focus or concentration during everyday activities?" },
+          { id: 6, text: "How frequently have you avoided social interactions or obligations due to a feeling of apprehension?" },
+          { id: 7, text: "How often have you replayed past interactions repeatedly, worrying if you said or did something wrong?" },
+          { id: 8, text: "How frequently have you felt hyper-vigilant or constantly on guard for potential problems?" },
+          { id: 9, text: "How often have you felt an unexplainable sense of dread, as if something bad is about to happen?" },
+          { id: 10, text: "How frequently have you felt mentally exhausted from trying to control or predict future events?" }
+        ],
+        categories: [
+          {
+            minPct: 0, maxPct: 25,
+            title: "Calm & Grounded Anxiety Baseline",
+            badge: "Low Anxiety Indicators",
+            colorClass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+            summary: "Your responses suggest a generally calm nervous system with minimal persistent worry.",
+            patterns: "You seem capable of acknowledging uncertainty without entering loops of repetitive overthinking or physiological alarm.",
+            suggestions: [
+              "Continue cultivating your natural mindfulness and present-moment awareness.",
+              "Keep up regular physical routines that keep your nervous system balanced.",
+              "Use journaling to celebrate how you handle unexpected life updates calmly."
+            ],
+            reflection: [
+              "What habits help you remain centered when plans change unexpectedly?",
+              "How do you maintain a grounded perspective during busy weeks?"
+            ]
+          },
+          {
+            minPct: 26, maxPct: 50,
+            title: "Mild Anticipatory Tension",
+            badge: "Mild Anxiety Indicators",
+            colorClass: "text-blue-700 bg-blue-50 border-blue-200",
+            summary: "You experience occasional nervous energy or worrying thoughts around specific high-stakes events.",
+            patterns: "Your anxiety appears situational rather than constant. You might overthink upcoming decisions or experience temporary physical restlessness before key events.",
+            suggestions: [
+              "Try the '5-4-3-2-1' sensory grounding exercise when thoughts start racing.",
+              "Write down worries on paper to externalize them rather than looping them internally.",
+              "Limit caffeine intake after noon to prevent heightening physical jitters."
+            ],
+            reflection: [
+              "Which specific situations tend to spark my overthinking the most?",
+              "What is a realistic outcome that is just as likely as my worst-case scenario?"
+            ]
+          },
+          {
+            minPct: 51, maxPct: 75,
+            title: "Moderate Anxiety & Nervous Strain",
+            badge: "Moderate Anxiety Indicators",
+            colorClass: "text-amber-800 bg-amber-50 border-amber-200",
+            summary: "Your responses reflect sustained worrying patterns, physical symptoms, and difficulty relaxing.",
+            patterns: "Apprehension and overthinking may be taking up significant mental bandwidth, leading to concentration challenges and body tension.",
+            suggestions: [
+              "Practice diaphragmatic (belly) breathing for 5 minutes twice daily to soothe the vagus nerve.",
+              "Schedule a structured 15-minute 'worry window' during the afternoon, deferring thoughts to that time.",
+              "Explore cognitive reframing techniques or cognitive-behavioral self-help books.",
+              "Consider speaking with a licensed therapist for personalized anxiety management strategies."
+            ],
+            reflection: [
+              "Am I trying to control factors that are fundamentally outside my control?",
+              "How can I practice self-compassion when I feel nervous?"
+            ]
+          },
+          {
+            minPct: 76, maxPct: 100,
+            title: "Elevated Anxiety & Hyperarousal",
+            badge: "Elevated Anxiety Indicators",
+            colorClass: "text-rose-800 bg-rose-50 border-rose-200",
+            summary: "Your answers suggest substantial anxiety, persistent hyper-vigilance, and emotional discomfort.",
+            patterns: "Frequent physical discomfort, dread, or avoidance behaviors are likely impacting your daily quality of life and peace of mind.",
+            suggestions: [
+              "Consult a clinical specialist or physician for professional evaluation and support.",
+              "Prioritize soothing somatic activities like gentle stretching, warm baths, or soft music.",
+              "Avoid high-intensity stimulants, news overload, and stressful social environments temporarily.",
+              "Remember that feelings of anxiety, while intense, are bodily signals and will pass."
+            ],
+            reflection: [
+              "What safe space or trusted person brings me the greatest sense of physical relief?",
+              "What is one gentle step I can take today to comfort my nervous system?"
+            ]
+          }
+        ]
+      },
+
+      "test-03": {
+        id: "test-03",
+        number: "TEST 03",
+        title: "Emotional Wellbeing Assessment",
+        tagline: "Mood Dynamics, Vitality & Connection",
+        shortDesc: "Explore your general mood consistency, daily motivation, capacity for joy, and emotional vitality.",
+        timeEst: "3-4 mins",
+        colorScheme: {
+          bg: "bg-peach/15",
+          badge: "bg-peach/30 text-peachDark border-peach/50",
+          accent: "#E9BCA8",
+          darkAccent: "#B36144",
+          btnBg: "bg-peachDark text-white hover:bg-peachDark/90"
+        },
+        svgBg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-peach">
+                  <path fill="currentColor" opacity="0.4" d="M47.7,-67.2C60.2,-56.3,67.8,-40.5,71.1,-24.5C74.4,-8.5,73.4,7.8,67.3,22.2C61.2,36.7,50,49.3,36.5,57.7C23,66.1,7.2,70.3,-8.4,71.5C-24,72.6,-39.3,70.6,-51.7,61.8C-64.1,53,-73.5,37.3,-76.3,20.7C-79.1,4,-75.3,-13.6,-67.2,-28.4C-59.1,-43.2,-46.8,-55.2,-33.1,-65.4C-19.4,-75.5,-4.3,-83.8,9.7,-82.3C23.7,-80.8,35.2,-78.1,47.7,-67.2Z" transform="translate(100 100)" />
+                  <circle cx="100" cy="90" r="25" fill="#B36144" opacity="0.3"/>
+                </svg>`,
+        questions: [
+          { id: 1, text: "In the past two weeks, how often have you felt a genuine sense of warmth, contentment, or joy?" },
+          { id: 2, text: "How frequently have you felt motivated and eager to engage in your routine daily activities?" },
+          { id: 3, text: "How often have you felt connected to and supported by friends, family, or your community?" },
+          { id: 4, text: "How frequently have you felt optimistic and hopeful about your future personal outlook?" },
+          { id: 5, text: "How often have you experienced emotional balance, where your feelings felt steady and manageable?" },
+          { id: 6, text: "How frequently have you found genuine satisfaction or pleasure in your hobbies or leisure time?" },
+          { id: 7, text: "How often have you felt confident in your ability to express your true feelings to others?" },
+          { id: 8, text: "How frequently have you woken up feeling emotionally refreshed and ready for the day?" },
+          { id: 9, text: "How often have you felt that your day-to-day efforts have personal meaning or significance?" },
+          { id: 10, text: "How frequently have you been able to let go of minor daily frustrations without holding onto them?" }
+        ],
+        categories: [
+          {
+            minPct: 76, maxPct: 100,
+            title: "Flourishing Emotional Wellbeing",
+            badge: "Optimal Vitality",
+            colorClass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+            summary: "Your responses reflect strong emotional vitality, healthy social connection, and high motivation.",
+            patterns: "You experience consistent positive mood, meaningful engagement in activities, and a solid sense of personal hope.",
+            suggestions: [
+              "Share your positive energy by mentoring or supporting others in your community.",
+              "Document moments of daily gratitude to anchor this sense of wellbeing.",
+              "Explore new creative challenges or personal growth goals."
+            ],
+            reflection: [
+              "What core values or habits are contributing most to my current sense of joy?",
+              "How can I sustain these nourishing conditions during future busy seasons?"
+            ]
+          },
+          {
+            minPct: 51, maxPct: 75,
+            title: "Steady & Moderate Emotional Health",
+            badge: "Moderate Balance",
+            colorClass: "text-blue-700 bg-blue-50 border-blue-200",
+            summary: "You maintain a sound baseline of wellbeing with occasional dips in energy or optimism.",
+            patterns: "Your emotional health is stable, though routine stress or fatigue may occasionally dampen your enthusiasm or sense of connection.",
+            suggestions: [
+              "Schedule more intentional quality time with people who energize you.",
+              "Re-engage with creative hobbies or physical activities you used to love.",
+              "Ensure you are getting enough outdoor sunshine and physical movement daily."
+            ],
+            reflection: [
+              "Which activities reliably boost my mood when I feel slightly drained?",
+              "Who in my circle makes me feel most understood and valued?"
+            ]
+          },
+          {
+            minPct: 26, maxPct: 50,
+            title: "Subdued Vitality & Emotional Flatness",
+            badge: "Mildly Reduced Wellbeing",
+            colorClass: "text-amber-800 bg-amber-50 border-amber-200",
+            summary: "Your responses suggest lower emotional energy, periodic detachment, or reduced joy.",
+            patterns: "You may feel as though you are going through the motions without feeling deeply connected or excited about daily experiences.",
+            suggestions: [
+              "Focus on small daily micro-joys: a favorite beverage, quiet music, or a brief walk.",
+              "Avoid isolating yourself; even low-key social contact can restore emotional energy.",
+              "Be gentle with your productivity expectations while your emotional energy rebounds."
+            ],
+            reflection: [
+              "What feeling or experience am I missing most in my life right now?",
+              "What is one tiny pleasure I can grant myself without feeling guilty?"
+            ]
+          },
+          {
+            minPct: 0, maxPct: 25,
+            title: "Low Emotional Vitality & Depleted Mood",
+            badge: "Significant Strain",
+            colorClass: "text-rose-800 bg-rose-50 border-rose-200",
+            summary: "Your responses reflect low motivation, emotional numbness, or persistent feelings of sadness.",
+            patterns: "You appear to be experiencing significant emotional fatigue, isolation, or difficulty feeling pleasure in daily life.",
+            suggestions: [
+              "Consider speaking with a mental health professional or counselor for compassionate support.",
+              "Reach out to a close friend or loved one and share how you have been feeling.",
+              "Focus strictly on basic care: nourishing food, gentle movement, adequate rest.",
+              "Remember that emotional low points are valid and support is readily available."
+            ],
+            reflection: [
+              "What step can I take today to show myself extra kindness and patience?",
+              "Who is one compassionate person I feel safe opening up to?"
+            ]
+          }
+        ]
+      },
+
+      "test-04": {
+        id: "test-04",
+        number: "TEST 04",
+        title: "Burnout Assessment",
+        tagline: "Mental Exhaustion & Professional Disengagement",
+        shortDesc: "Evaluate mental fatigue, emotional depletion, cynicism, and lack of recovery following prolonged pressure.",
+        timeEst: "3-5 mins",
+        colorScheme: {
+          bg: "bg-paleblue/20",
+          badge: "bg-paleblue/40 text-paleblueDark border-paleblue/60",
+          accent: "#C4D5DF",
+          darkAccent: "#4F7285",
+          btnBg: "bg-paleblueDark text-white hover:bg-paleblueDark/90"
+        },
+        svgBg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-paleblue">
+                  <path fill="currentColor" opacity="0.4" d="M43.2,-61.8C54.4,-51.9,60.9,-37,64.2,-22.1C67.5,-7.2,67.6,7.7,62.8,21.3C58,34.9,48.2,47.2,35.9,55.8C23.6,64.4,8.8,69.3,-5.7,70.1C-20.2,70.9,-34.4,67.6,-46.8,59.3C-59.2,51,-69.8,37.7,-73.4,22.7C-77,7.7,-73.6,-9,-65.9,-23.4C-58.2,-37.8,-46.2,-49.9,-32.9,-58.8C-19.6,-67.7,-5,-73.4,9,-74.8C23.1,-76.2,32,-71.7,43.2,-61.8Z" transform="translate(100 100)" />
+                  <line x1="70" y1="130" x2="130" y2="70" stroke="#4F7285" stroke-width="3" stroke-linecap="round"/>
+                </svg>`,
+        questions: [
+          { id: 1, text: "In the past two weeks, how often have you felt emotionally drained by your work, studies, or daily duties?" },
+          { id: 2, text: "How frequently have you felt completely exhausted even after a full night of sleep or a weekend break?" },
+          { id: 3, text: "How often have you noticed yourself becoming cynical, detached, or numb regarding your responsibilities?" },
+          { id: 4, text: "How frequently have you felt that your effort makes little to no meaningful difference?" },
+          { id: 5, text: "How often have you found it difficult to concentrate or sustain focus on complex tasks?" },
+          { id: 6, text: "How frequently have you felt dread or anxiety when thinking about the start of a new workday or week?" },
+          { id: 7, text: "How often have you felt physically weighed down or sluggish throughout your entire day?" },
+          { id: 8, text: "How frequently have you reduced your personal standards simply because you lacked the energy to care?" },
+          { id: 9, text: "How often have you felt isolated or disconnected from colleagues, teammates, or peers?" },
+          { id: 10, text: "How frequently have you felt that demands placed upon you far exceed your personal capacity?" }
+        ],
+        categories: [
+          {
+            minPct: 0, maxPct: 25,
+            title: "Energized & Engaged State",
+            badge: "Low Burnout Risk",
+            colorClass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+            summary: "Your responses reflect strong energy replenishment, engagement, and effective pacing.",
+            patterns: "You maintain a healthy balance between effort and recovery, feeling generally energized by your routine.",
+            suggestions: [
+              "Continue protecting your sleep and weekend recovery periods.",
+              "Keep monitoring your workload to catch early signs of scope creep.",
+              "Celebrate project milestones to reinforce a sense of accomplishment."
+            ],
+            reflection: [
+              "What work habits or boundaries best protect my daily energy?",
+              "How do I recognize when my workload is becoming unmanageable?"
+            ]
+          },
+          {
+            minPct: 26, maxPct: 50,
+            title: "Mild Work Strain & Early Fatigue",
+            badge: "Mild Strain",
+            colorClass: "text-blue-700 bg-blue-50 border-blue-200",
+            summary: "You are experiencing periodic fatigue or mild detachment during particularly heavy periods.",
+            patterns: "While you remain productive, you notice that rest breaks do not feel quite as restorative as usual.",
+            suggestions: [
+              "Implement strict 'digital sunset' hours where work notifications are muted.",
+              "Take short 5-minute movement breaks every hour during work.",
+              "Have an honest conversation with managers or peers about task priorities."
+            ],
+            reflection: [
+              "Where in my work or study routine am I expending unnecessary friction?",
+              "What non-essential task can I say 'no' to this week?"
+            ]
+          },
+          {
+            minPct: 51, maxPct: 75,
+            title: "Moderate Burnout & Emotional Exhaustion",
+            badge: "Moderate Burnout Risk",
+            colorClass: "text-amber-800 bg-amber-50 border-amber-200",
+            summary: "Your responses reflect notable mental depletion, growing cynicism, and reduced efficacy.",
+            patterns: "You are likely feeling disconnected from your work's purpose, with persistent fatigue that carries into rest periods.",
+            suggestions: [
+              "Take consecutive vacation days or mental health days if accessible.",
+              "Re-evaluate your core commitments and trim secondary projects.",
+              "Engage in non-work activities where performance is not measured.",
+              "Seek guidance from a workplace mentor or career/wellness counselor."
+            ],
+            reflection: [
+              "Am I tying too much of my personal self-worth strictly to output and productivity?",
+              "What would genuine physical and mental rest look like for me right now?"
+            ]
+          },
+          {
+            minPct: 76, maxPct: 100,
+            title: "Elevated Burnout & Complete Depletion",
+            badge: "Severe Burnout Indicators",
+            colorClass: "text-rose-800 bg-rose-50 border-rose-200",
+            summary: "Your answers indicate severe mental and physical exhaustion, detachment, and sense of futility.",
+            patterns: "Prolonged demand without adequate recovery has severely depleted your energy reserves. Active recovery is urgently needed.",
+            suggestions: [
+              "Prioritize immediate, structured leave or reduction in responsibilities.",
+              "Consult a clinical healthcare professional or counselor specializing in burnout.",
+              "Focus exclusively on foundational restorative sleep, nutrition, and quiet reflection.",
+              "Set firm boundaries to protect your mental health above external expectations."
+            ],
+            reflection: [
+              "What fundamental changes do I need to make in my work environment or lifestyle?",
+              "Who can help me advocate for my health and workload adjustments?"
+            ]
+          }
+        ]
+      },
+
+      "test-05": {
+        id: "test-05",
+        number: "TEST 05",
+        title: "Self-Esteem & Confidence Assessment",
+        tagline: "Self-Acceptance, Boundaries & Inner Narrative",
+        shortDesc: "Explore your internal dialogue, self-worth, resilience to criticism, and social comparison habits.",
+        timeEst: "3-4 mins",
+        colorScheme: {
+          bg: "bg-sage/15",
+          badge: "bg-sage/30 text-sageDark border-sage/50",
+          accent: "#A7B5A0",
+          darkAccent: "#4A5A43",
+          btnBg: "bg-sageDark text-white hover:bg-sageDark/90"
+        },
+        svgBg: `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full text-sage">
+                  <path fill="currentColor" opacity="0.4" d="M37,-57.2C47.2,-48.1,54.4,-36.8,60.6,-24.1C66.8,-11.4,72,2.7,69.5,16.2C67,29.7,56.8,42.6,44.5,50.7C32.2,58.8,17.8,62.1,2.8,61.7C-12.2,61.3,-27.8,57.2,-40.4,48.7C-53,40.2,-62.6,27.3,-66.3,12.7C-70,-1.9,-67.8,-18.2,-60.1,-31.4C-52.4,-44.6,-39.2,-54.7,-25.6,-61.8C-12,-68.9,2,-73,15.8,-70.7C29.6,-68.4,26.8,-66.3,37,-57.2Z" transform="translate(100 100)" />
+                  <path d="M100 70 L108 90 L130 90 L112 102 L118 122 L100 110 L82 122 L88 102 L70 90 L92 90 Z" fill="#4A5A43" opacity="0.5"/>
+                </svg>`,
+        questions: [
+          { id: 1, text: "In the past two weeks, how often have you spoken to yourself with kindness and self-compassion when making a mistake?" },
+          { id: 2, text: "How frequently have you felt confident in your ability to express your opinion, even if others disagree?" },
+          { id: 3, text: "How often have you felt satisfied with who you are, without wishing you were someone else?" },
+          { id: 4, text: "How frequently have you been able to set firm personal boundaries without feeling intense guilt?" },
+          { id: 5, text: "How often have you acknowledged your own personal strengths, talents, and accomplishments?" },
+          { id: 6, text: "How frequently have you felt worthy of love, respect, and success simply as you are?" },
+          { id: 7, text: "How often have you avoided comparing your life path or achievements to others on social media?" },
+          { id: 8, text: "How frequently have you accepted compliments from others warmly without brushing them off?" },
+          { id: 9, text: "How often have you trusted your own decision-making capacity without needing constant external validation?" },
+          { id: 10, text: "How frequently have you felt resilient when facing criticism or disapproval from others?" }
+        ],
+        categories: [
+          {
+            minPct: 76, maxPct: 100,
+            title: "Strong & Grounded Self-Esteem",
+            badge: "High Self-Acceptance",
+            colorClass: "text-emerald-700 bg-emerald-50 border-emerald-200",
+            summary: "Your responses reflect robust self-worth, healthy boundaries, and a compassionate internal dialogue.",
+            patterns: "You demonstrate high self-acceptance, resilience in the face of setbacks, and low reliance on external validation.",
+            suggestions: [
+              "Continue modeling healthy boundary setting for peers and loved ones.",
+              "Channel your self-confidence into advocating for meaningful causes.",
+              "Keep engaging in inner growth and lifelong learning."
+            ],
+            reflection: [
+              "What key experiences helped shape my strong sense of self-worth?",
+              "How can I encourage self-compassion in those around me?"
+            ]
+          },
+          {
+            minPct: 51, maxPct: 75,
+            title: "Moderate Self-Confidence with Occasional Doubt",
+            badge: "Moderate Self-Assurance",
+            colorClass: "text-blue-700 bg-blue-50 border-blue-200",
+            summary: "You possess a solid foundational self-worth, though self-criticism or social comparison occasionally surface.",
+            patterns: "While generally self-assured, certain high-pressure social or professional settings may spark temporary self-doubt.",
+            suggestions: [
+              "Keep a 'wins journal' recording positive feedback and personal breakthroughs.",
+              "Practice notice-and-replace techniques when critical inner voices appear.",
+              "Curate your social media feeds to minimize upward social comparison."
+            ],
+            reflection: [
+              "In which situations do I tend to doubt my abilities most?",
+              "What evidence contradicts my self-critical thoughts in those moments?"
+            ]
+          },
+          {
+            minPct: 26, maxPct: 50,
+            title: "Vulnerable Self-Worth & Critical Inner Dialogue",
+            badge: "Elevated Self-Doubt",
+            colorClass: "text-amber-800 bg-amber-50 border-amber-200",
+            summary: "Your responses indicate frequent self-criticism, fear of judgment, and difficulty recognizing personal worth.",
+            patterns: "You likely struggle with harsh internal standards, difficulty setting boundaries, and a tendency to discount your own achievements.",
+            suggestions: [
+              "Speak to yourself using the same gentle tone you would use with a close friend.",
+              "Practice saying 'no' to minor requests without giving lengthy justifications.",
+              "List 3 qualities you appreciate about your character every evening."
+            ],
+            reflection: [
+              "Whose voice or standards am I adopting when I criticize myself?",
+              "What would it feel like to accept myself as worthy right now?"
+            ]
+          },
+          {
+            minPct: 0, maxPct: 25,
+            title: "Depleted Self-Esteem & Harsh Self-Criticism",
+            badge: "Significant Self-Worth Strain",
+            colorClass: "text-rose-800 bg-rose-50 border-rose-200",
+            summary: "Your answers suggest persistent self-doubt, intense fear of rejection, and strong harsh inner criticism.",
+            patterns: "You may feel unworthy, overly reliant on external approval, and vulnerable to emotional exhaustion from people-pleasing.",
+            suggestions: [
+              "Consider working with a therapist to heal core beliefs around self-worth.",
+              "Commit to a daily practice of compassionate self-talk affirmations.",
+              "Limit interactions with people who consistently diminish your feelings.",
+              "Remember that your value is intrinsic and not dependent on productivity."
+            ],
+            reflection: [
+              "What is one positive truth about myself that I find hard to accept?",
+              "How can I protect my peace from harsh external judgments?"
+            ]
+          }
+        ]
+      }
+    };
+
+    // APPLICATION STATE MANAGEMENT
+    const state = {
+      currentView: 'home', // 'home' | 'intro' | 'quiz' | 'results'
+      activeTestId: null,
+      currentQuestionIndex: 0,
+      userAnswers: {}, // { questionId: value }
+      testResultsHistory: {} // stored results
+    };
+
+    // NAVIGATION SYSTEM
+    function navigateTo(view, testId = null) {
+      state.currentView = view;
+      if (testId) state.activeTestId = testId;
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function startAssessment(testId) {
+      state.activeTestId = testId;
+      state.currentQuestionIndex = 0;
+      state.userAnswers = {};
+      navigateTo('intro', testId);
+    }
+
+    function launchQuiz() {
+      state.currentQuestionIndex = 0;
+      navigateTo('quiz', state.activeTestId);
+    }
+
+    function selectAnswer(questionId, value) {
+      state.userAnswers[questionId] = value;
+      renderQuizView(); // Quick re-render to update radio selection state
+    }
+
+    function prevQuestion() {
+      if (state.currentQuestionIndex > 0) {
+        state.currentQuestionIndex--;
+        renderQuizView();
+      }
+    }
+
+    function nextQuestion() {
+      const currentTest = ASSESSMENTS[state.activeTestId];
+      const q = currentTest.questions[state.currentQuestionIndex];
+      if (state.userAnswers[q.id] === undefined) {
+        alert("Please select an answer option before proceeding.");
+        return;
+      }
+
+      if (state.currentQuestionIndex < currentTest.questions.length - 1) {
+        state.currentQuestionIndex++;
+        renderQuizView();
+      } else {
+        calculateAndShowResults();
+      }
+    }
+
+    function calculateAndShowResults() {
+      const test = ASSESSMENTS[state.activeTestId];
+      let totalScore = 0;
+      const maxScore = test.questions.length * 4;
+
+      test.questions.forEach(q => {
+        totalScore += (state.userAnswers[q.id] || 0);
+      });
+
+      const percentage = Math.round((totalScore / maxScore) * 100);
+
+      // Match result category based on percentage
+      let category = test.categories.find(c => percentage >= c.minPct && percentage <= c.maxPct);
+      if (!category) category = test.categories[0];
+
+      const resultPayload = {
+        testId: test.id,
+        testTitle: test.title,
+        testNumber: test.number,
+        totalScore,
+        maxScore,
+        percentage,
+        category,
+        answers: { ...state.userAnswers },
+        date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      };
+
+      state.testResultsHistory[test.id] = resultPayload;
+      navigateTo('results', test.id);
+    }
+
+    // MAIN RENDER ENGINE
+    function render() {
+      const container = document.getElementById('app-content');
+      if (!container) return;
+
+      switch (state.currentView) {
+        case 'home':
+          container.innerHTML = renderHomeView();
+          break;
+        case 'intro':
+          container.innerHTML = renderIntroView();
+          break;
+        case 'quiz':
+          renderQuizView();
+          break;
+        case 'results':
+          container.innerHTML = renderResultsView();
+          break;
+        default:
+          container.innerHTML = renderHomeView();
+      }
+
+      // Re-initialize Lucide Icons after render
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // VIEW 1: HOMEPAGE
+    function renderHomeView() {
+      return `
+        <div class="space-y-16 fade-enter-active">
+          <!-- HERO SECTION -->
+          <section class="text-center max-w-3xl mx-auto space-y-6 pt-6">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sage/20 text-sageDark border border-sage/40 text-xs font-semibold uppercase tracking-wider">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Psychoeducational Assessment Platform
+            </div>
+            <h1 class="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-charcoal leading-tight tracking-tight">
+              Your Mind Deserves Attention.
+            </h1>
+            <p class="text-base sm:text-lg text-charcoal/80 leading-relaxed font-light">
+              Take a quiet moment to understand your thoughts, stress levels, and emotional balance through 5 thoughtfully designed psychological self-assessments.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a href="#assessments-grid" class="px-7 py-3.5 bg-charcoal text-ivory rounded-full font-medium text-sm hover:bg-charcoal/90 transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                Explore Assessments <i data-lucide="arrow-down" class="w-4 h-4"></i>
+              </a>
+              <button onclick="openModal('how-it-works-modal')" class="px-6 py-3.5 bg-white border border-charcoal/15 text-charcoal rounded-full font-medium text-sm hover:bg-charcoal/5 transition-all">
+                How It Works
+              </button>
+            </div>
+          </section>
+
+          <!-- ASSESSMENTS GRID -->
+          <section id="assessments-grid" class="space-y-8">
+            <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 border-b border-charcoal/10 pb-4">
+              <div>
+                <span class="text-xs font-semibold uppercase tracking-widest text-charcoal/50 block">Self-Reflection Suite</span>
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal">Available Wellness Tests</h2>
+              </div>
+              <span class="text-xs text-charcoal/60 bg-white px-3 py-1.5 rounded-full border border-charcoal/10">5 Independent Assessments</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              ${Object.values(ASSESSMENTS).map(test => `
+                <div class="group bg-white rounded-2xl border border-charcoal/10 p-6 flex flex-col justify-between hover:shadow-xl hover:border-charcoal/30 transition-all duration-300 relative overflow-hidden">
+                  <div class="space-y-4 relative z-10">
+                    <div class="flex items-center justify-between">
+                      <span class="text-[11px] font-bold tracking-widest px-2.5 py-1 rounded-full border ${test.colorScheme.badge}">
+                        ${test.number}
+                      </span>
+                      <span class="text-xs text-charcoal/50 flex items-center gap-1">
+                        <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${test.timeEst}
+                      </span>
+                    </div>
+
+                    <div class="w-16 h-16 rounded-2xl ${test.colorScheme.bg} flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
+                      ${test.svgBg}
+                    </div>
+
+                    <div>
+                      <h3 class="font-serif text-xl font-bold text-charcoal group-hover:text-sageDark transition-colors">
+                        ${test.title}
+                      </h3>
+                      <p class="text-xs text-charcoal/60 font-medium mt-1">${test.tagline}</p>
+                    </div>
+
+                    <p class="text-xs text-charcoal/70 leading-relaxed line-clamp-3">
+                      ${test.shortDesc}
+                    </p>
+                  </div>
+
+                  <div class="pt-6 mt-6 border-t border-charcoal/5 flex items-center justify-between relative z-10">
+                    <span class="text-[11px] text-charcoal/50">10 Questions &bull; past 2 weeks</span>
+                    <button onclick="startAssessment('${test.id}')" class="px-4 py-2 text-xs font-semibold ${test.colorScheme.btnBg} rounded-full transition-all flex items-center gap-1.5 shadow-sm">
+                      Start Test <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </section>
+
+          <!-- HOW IT WORKS & WHY SELF AWARENESS MATTERS -->
+          <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="bg-white/80 p-8 rounded-2xl border border-charcoal/10 space-y-4">
+              <div class="w-10 h-10 rounded-full bg-sage/20 border border-sage flex items-center justify-center text-sageDark">
+                <i data-lucide="compass" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-serif text-2xl font-bold text-charcoal">Why Self-Awareness Matters</h3>
+              <p class="text-sm text-charcoal/80 leading-relaxed">
+                Regular emotional check-ins help identify stress accumulation, fatigue, and worrying patterns before they lead to severe burnout or emotional distress.
+              </p>
+              <ul class="space-y-2 text-xs text-charcoal/75">
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sageDark"></i> Validates personal daily emotional experiences</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sageDark"></i> Provides actionable steps for restorative self-care</li>
+                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-sageDark"></i> Encourages healthy boundary setting</li>
+              </ul>
+            </div>
+
+            <div class="bg-white/80 p-8 rounded-2xl border border-charcoal/10 space-y-4">
+              <div class="w-10 h-10 rounded-full bg-lavender/20 border border-lavender flex items-center justify-center text-lavenderDark">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <h3 class="font-serif text-2xl font-bold text-charcoal">Privacy & Safety First</h3>
+              <p class="text-sm text-charcoal/80 leading-relaxed">
+                Your wellbeing and data privacy are completely protected. All responses are calculated inside your device's browser memory.
+              </p>
+              <ul class="space-y-2 text-xs text-charcoal/75">
+                <li class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-lavenderDark"></i> No user registration or emails collected</li>
+                <li class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-lavenderDark"></i> Zero server tracking or third-party data sales</li>
+                <li class="flex items-center gap-2"><i data-lucide="lock" class="w-4 h-4 text-lavenderDark"></i> Immediate crisis support resources available anytime</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // VIEW 2: INTRO PAGE FOR SPECIFIC ASSESSMENT
+    function renderIntroView() {
+      const test = ASSESSMENTS[state.activeTestId];
+      if (!test) return '<div>Test not found</div>';
+
+      return `
+        <div class="max-w-2xl mx-auto space-y-8 fade-enter-active py-4">
+          <button onclick="navigateTo('home')" class="inline-flex items-center gap-2 text-xs font-semibold text-charcoal/60 hover:text-charcoal transition-colors">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+          </button>
+
+          <div class="bg-white rounded-3xl border border-charcoal/10 p-8 sm:p-10 space-y-6 shadow-sm">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold tracking-widest px-3 py-1 rounded-full border ${test.colorScheme.badge}">
+                ${test.number}
+              </span>
+              <span class="text-xs text-charcoal/50 flex items-center gap-1">
+                <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${test.timeEst} &bull; 10 Questions
+              </span>
+            </div>
+
+            <div>
+              <h1 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">${test.title}</h1>
+              <p class="text-sm font-medium text-charcoal/60 mt-1">${test.tagline}</p>
+            </div>
+
+            <p class="text-sm text-charcoal/80 leading-relaxed">
+              ${test.shortDesc}
+            </p>
+
+            <div class="bg-[#F8F6F1] p-4 rounded-2xl border border-charcoal/10 space-y-2 text-xs text-charcoal/70">
+              <div class="font-bold text-charcoal flex items-center gap-1.5">
+                <i data-lucide="info" class="w-4 h-4 text-sageDark"></i> Instructions & Context
+              </div>
+              <p>Please reflect on your feelings and daily experience over the <strong>past two weeks</strong>. Answer honestly based on your actual experience rather than how you think you should feel.</p>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-charcoal/10">
+              <span class="text-xs text-charcoal/50">Untimed assessment &bull; Self-paced</span>
+              <button onclick="launchQuiz()" class="w-full sm:w-auto px-8 py-3.5 ${test.colorScheme.btnBg} rounded-full font-medium text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                Begin Assessment <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // VIEW 3: INTERACTIVE QUIZ INTERFACE
+    function renderQuizView() {
+      const container = document.getElementById('app-content');
+      const test = ASSESSMENTS[state.activeTestId];
+      if (!test || !container) return;
+
+      const qIndex = state.currentQuestionIndex;
+      const question = test.questions[qIndex];
+      const totalQuestions = test.questions.length;
+      const progressPct = Math.round(((qIndex + 1) / totalQuestions) * 100);
+      const selectedValue = state.userAnswers[question.id];
+
+      container.innerHTML = `
+        <div class="max-w-2xl mx-auto space-y-8 fade-enter-active py-4">
+          <!-- TOP PROGRESS BAR & COUNTER -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs font-medium text-charcoal/60">
+              <span class="flex items-center gap-2">
+                <button onclick="navigateTo('home')" class="hover:text-charcoal"><i data-lucide="x" class="w-4 h-4"></i></button>
+                <span>${test.title}</span>
+              </span>
+              <span>Question ${qIndex + 1} of ${totalQuestions}</span>
+            </div>
+            
+            <div class="w-full bg-charcoal/10 h-2 rounded-full overflow-hidden">
+              <div class="h-full ${test.colorScheme.btnBg.split(' ')[0]} transition-all duration-300" style="width: ${progressPct}%"></div>
+            </div>
+          </div>
+
+          <!-- QUESTION CARD -->
+          <div class="bg-white rounded-3xl border border-charcoal/10 p-6 sm:p-10 space-y-8 shadow-sm">
+            <div class="space-y-2">
+              <span class="text-[11px] font-semibold text-charcoal/40 uppercase tracking-widest">Timeframe: Past 2 Weeks</span>
+              <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal leading-snug">
+                ${question.text}
+              </h2>
+            </div>
+
+            <!-- ANSWER OPTIONS LIST -->
+            <div class="space-y-3">
+              ${ANSWER_SCALE.map((opt) => {
+                const isSelected = selectedValue === opt.value;
+                return `
+                  <button onclick="selectAnswer(${question.id}, ${opt.value})" 
+                    class="w-full text-left p-4 rounded-2xl border transition-all duration-200 flex items-center justify-between group ${
+                      isSelected 
+                        ? 'border-charcoal bg-charcoal/5 shadow-sm font-semibold' 
+                        : 'border-charcoal/15 hover:border-charcoal/40 hover:bg-ivory'
+                    }">
+                    <div class="flex items-center gap-3">
+                      <div class="w-5 h-5 rounded-full border border-charcoal/30 flex items-center justify-center ${isSelected ? 'border-charcoal bg-charcoal text-white' : 'group-hover:border-charcoal'}">
+                        ${isSelected ? '<i data-lucide="check" class="w-3.5 h-3.5"></i>' : ''}
+                      </div>
+                      <div>
+                        <span class="text-sm text-charcoal block">${opt.label}</span>
+                        <span class="text-[11px] text-charcoal/50 font-normal block">${opt.desc}</span>
+                      </div>
+                    </div>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+
+            <!-- NAVIGATION BUTTONS -->
+            <div class="pt-6 border-t border-charcoal/10 flex items-center justify-between gap-4">
+              <button onclick="prevQuestion()" ${qIndex === 0 ? 'disabled class="opacity-40 cursor-not-allowed text-xs px-5 py-2.5 rounded-full border border-charcoal/20"' : 'class="text-xs px-5 py-2.5 rounded-full border border-charcoal/20 hover:bg-charcoal/5 font-medium transition-all flex items-center gap-1.5"'}>
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Previous
+              </button>
+
+              <button onclick="nextQuestion()" ${selectedValue === undefined ? 'disabled class="opacity-50 cursor-not-allowed px-6 py-2.5 bg-charcoal/50 text-white text-xs font-semibold rounded-full"' : `class="px-6 py-2.5 ${test.colorScheme.btnBg} text-xs font-semibold rounded-full shadow-md transition-all flex items-center gap-1.5"`}>
+                ${qIndex === totalQuestions - 1 ? 'View Results' : 'Next Question'} <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // VIEW 4: RESULTS DASHBOARD
+    function renderResultsView() {
+      const test = ASSESSMENTS[state.activeTestId];
+      const result = state.testResultsHistory[state.activeTestId];
+
+      if (!test || !result) {
+        return `<div class="text-center py-12"><p>No results found. Please complete the assessment.</p><button onclick="navigateTo('home')" class="mt-4 px-4 py-2 bg-charcoal text-white rounded-full text-xs">Return to Home</button></div>`;
+      }
+
+      const cat = result.category;
+
+      return `
+        <div class="max-w-4xl mx-auto space-y-10 fade-enter-active py-4">
+          <!-- NAVIGATION & ACTIONS BAR -->
+          <div class="no-print flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <button onclick="navigateTo('home')" class="inline-flex items-center gap-2 text-xs font-semibold text-charcoal/60 hover:text-charcoal">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Dashboard
+            </button>
+
+            <div class="flex items-center gap-3">
+              <button onclick="window.print()" class="px-4 py-2 bg-white border border-charcoal/20 rounded-full text-xs font-semibold hover:bg-charcoal/5 transition-all flex items-center gap-1.5">
+                <i data-lucide="printer" class="w-3.5 h-3.5"></i> Save / Print Report
+              </button>
+              <button onclick="startAssessment('${test.id}')" class="px-4 py-2 bg-charcoal text-white rounded-full text-xs font-semibold hover:bg-charcoal/90 transition-all flex items-center gap-1.5">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Retake Test
+              </button>
+            </div>
+          </div>
+
+          <!-- PRINTABLE REPORT HEADER -->
+          <div class="bg-white rounded-3xl border border-charcoal/15 p-8 sm:p-12 space-y-8 shadow-sm">
+            <div class="border-b border-charcoal/10 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <span class="text-xs font-bold tracking-widest px-3 py-1 rounded-full border ${test.colorScheme.badge}">
+                  ${test.number} OFFICIAL SUMMARY
+                </span>
+                <h1 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal mt-2">${test.title}</h1>
+                <p class="text-xs text-charcoal/50 mt-0.5">Completed on ${result.date} &bull; MINDSPACE Platform</p>
+              </div>
+
+              <!-- CIRCULAR VISUAL SCORE GAUGE -->
+              <div class="flex items-center gap-4 bg-[#F8F6F1] p-4 rounded-2xl border border-charcoal/10">
+                <div class="relative w-20 h-20 flex items-center justify-center">
+                  <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-charcoal/10" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                    <path class="text-sageDark" stroke-dasharray="${result.percentage}, 100" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"/>
+                  </svg>
+                  <span class="absolute font-serif text-lg font-bold text-charcoal">${result.percentage}%</span>
+                </div>
+                <div>
+                  <div class="text-xs text-charcoal/50 uppercase font-semibold">Total Score</div>
+                  <div class="text-xl font-bold text-charcoal">${result.totalScore} <span class="text-xs font-normal text-charcoal/50">/ ${result.maxScore}</span></div>
+                  <div class="text-[11px] font-semibold ${cat.colorClass.split(' ')[0]} mt-0.5">${cat.badge}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RESULT CATEGORY BANNER -->
+            <div class="p-6 rounded-2xl border ${cat.colorClass} space-y-2">
+              <span class="text-xs font-bold uppercase tracking-wider block opacity-80">Assessment Profile Indicator</span>
+              <h2 class="font-serif text-2xl font-bold">${cat.title}</h2>
+              <p class="text-sm leading-relaxed font-medium">${cat.summary}</p>
+            </div>
+
+            <!-- SECTION C: WHAT THIS RESULT MEANS -->
+            <div class="space-y-3">
+              <h3 class="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
+                <i data-lucide="book-open" class="w-5 h-5 text-sageDark"></i> What This Result Means
+              </h3>
+              <p class="text-sm text-charcoal/80 leading-relaxed bg-[#F8F6F1] p-5 rounded-2xl border border-charcoal/10">
+                ${cat.summary} This assessment compares your answers across 10 core dimensions against a standard non-clinical baseline.
+              </p>
+            </div>
+
+            <!-- SECTION D: PATTERNS YOU MAY BE EXPERIENCING -->
+            <div class="space-y-3">
+              <h3 class="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
+                <i data-lucide="activity" class="w-5 h-5 text-lavenderDark"></i> Patterns You May Be Experiencing
+              </h3>
+              <p class="text-sm text-charcoal/80 leading-relaxed bg-[#F8F6F1] p-5 rounded-2xl border border-charcoal/10">
+                ${cat.patterns}
+              </p>
+            </div>
+
+            <!-- SECTION E: PERSONALIZED RECOMMENDATIONS -->
+            <div class="space-y-4">
+              <h3 class="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
+                <i data-lucide="compass" class="w-5 h-5 text-peachDark"></i> Actionable Suggestions for Growth
+              </h3>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                ${cat.suggestions.map((sug, idx) => `
+                  <div class="bg-[#F8F6F1] p-4 rounded-2xl border border-charcoal/10 flex items-start gap-3">
+                    <span class="w-6 h-6 rounded-full bg-charcoal/10 text-charcoal font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">${idx + 1}</span>
+                    <p class="text-xs text-charcoal/80 leading-relaxed font-medium">${sug}</p>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- SECTION F: REFLECTION QUESTIONS -->
+            <div class="space-y-4">
+              <h3 class="font-serif text-xl font-bold text-charcoal flex items-center gap-2">
+                <i data-lucide="pen-tool" class="w-5 h-5 text-paleblueDark"></i> Guided Reflection Prompts
+              </h3>
+              <div class="space-y-3">
+                ${cat.reflection.map((prompt) => `
+                  <div class="bg-white p-4 rounded-2xl border border-charcoal/15 space-y-2">
+                    <p class="text-xs font-semibold text-charcoal">&ldquo;${prompt}&rdquo;</p>
+                    <textarea placeholder="Write your personal thoughts here (optional, kept strictly in browser)..." class="no-print w-full text-xs p-3 rounded-xl border border-charcoal/10 bg-[#F8F6F1] focus:outline-none focus:border-charcoal resize-none" rows="2"></textarea>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- DISCLAIMER FOOTER IN REPORT -->
+            <div class="pt-6 border-t border-charcoal/10 text-[11px] text-charcoal/50 leading-relaxed">
+              <strong>Disclaimer:</strong> This MINDSPACE report is an educational self-awareness summary and is not a medical diagnostic document. If you are experiencing distress, please consult a qualified healthcare professional or contact crisis helplines at <strong>988</strong>.
+            </div>
+          </div>
+
+          <!-- OTHER TESTS NAVIGATION BAR -->
+          <div class="no-print bg-white p-6 sm:p-8 rounded-3xl border border-charcoal/10 space-y-4">
+            <h3 class="font-serif text-xl font-bold text-charcoal">Explore Other Self-Assessments</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              ${Object.values(ASSESSMENTS).filter(t => t.id !== test.id).map(other => `
+                <button onclick="startAssessment('${other.id}')" class="p-4 rounded-2xl border border-charcoal/10 hover:border-charcoal text-left transition-all bg-[#F8F6F1] hover:bg-white group">
+                  <span class="text-[10px] font-bold text-charcoal/50 uppercase block">${other.number}</span>
+                  <span class="text-xs font-bold text-charcoal group-hover:text-sageDark block mt-1">${other.title}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // MODAL CONTROL FUNCTIONS
+    function openModal(modalId) {
+      const backdrop = document.getElementById('modal-backdrop');
+      const cards = document.querySelectorAll('.modal-card');
+      cards.forEach(c => c.classList.add('hidden'));
+      
+      const target = document.getElementById(modalId);
+      if (backdrop && target) {
+        backdrop.classList.remove('hidden');
+        target.classList.remove('hidden');
+      }
+    }
+
+    function closeModal() {
+      const backdrop = document.getElementById('modal-backdrop');
+      if (backdrop) backdrop.classList.add('hidden');
+    }
+
+    // DOWNLOAD COMPLETE SOURCE ZIP ENGINE
+    function downloadSourceZip() {
+      if (!window.JSZip) {
+        alert("JSZip engine is loading. Please try again in a few seconds.");
+        return;
+      }
+
+      const zip = new JSZip();
+      
+      // Get current document outerHTML
+      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+
+      // Zip layout structure
+      zip.file("index.html", htmlContent);
+      zip.file("README.md", `# MINDSPACE — Mental Wellness Testing Platform
+
+MINDSPACE is a modern, interactive mental wellness assessment platform containing 5 independent psychological self-reflection questionnaires:
+
+1. TEST 01: Stress Level Assessment
+2. TEST 02: Anxiety Awareness Assessment
+3. TEST 03: Emotional Wellbeing Assessment
+4. TEST 04: Burnout Assessment
+5. TEST 05: Self-Esteem Assessment
+
+## Features
+- Single-file HTML architecture with Tailwind CSS & Lucide Icons
+- Real-time scoring calculations with 4 category thresholds per test
+- Printable / Saveable PDF assessment summaries
+- 100% confidential and local browser storage
+
+## How to Run
+Simply open \`index.html\` in any web browser.
+`);
+
+      zip.generateAsync({ type: "blob" }).then(function(content) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "MINDSPACE_Mental_Wellness_Platform.zip";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      });
+    }
+
+    // INITIALIZATION ON PAGE LOAD
+    window.onload = function() {
+      render();
+      if (window.lucide) lucide.createIcons();
+    };
+  </script>
+</body>
+</html>
